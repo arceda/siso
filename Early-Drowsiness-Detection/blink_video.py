@@ -13,12 +13,12 @@ import imutils
 import dlib
 
 import matplotlib.pyplot as plt
-import Tkinter as tk
-from Tkinter import*
+import tkinter as tk
+from tkinter import*
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from scipy.ndimage.interpolation import shift
 import pickle
-from Queue import Queue
+from queue import Queue
 
 # import the necessary packages
 
@@ -577,7 +577,7 @@ def blink_detector(output_textfile,input_video):
 
 
 output_file = 'alert.txt'  # The text file to write to (for blinks)#
-path = '/home/vicente/Videos/1yo.mp4' # the path to the input video
+path = '/home/vicente/datasets/somnolencia/Fold3_part2/31/10.mp4' # the path to the input video
 blink_detector(output_file,path)
 
 
