@@ -25,24 +25,17 @@ def eye_aspect_ratio(eye):
 	C = dist.euclidean(eye[0], eye[3])
 
 	# compute the eye aspect ratio
-	ear = (A + B) / (2.0 * C)
+	#ear = (A + B) / (2.0 * C)
+	ear = (A + B) / C
 
 	# return the eye aspect ratio
 	return ear
  
-# construct the argument parse and parse the arguments
-'''
-ap = argparse.ArgumentParser()
-ap.add_argument("-p", "--shape-predictor", required=True,
-	help="path to facial landmark predictor")
-ap.add_argument("-v", "--video", type=str, default="",
-	help="path to input video file")
-args = vars(ap.parse_args())
- '''
+
 # define two constants, one for the eye aspect ratio to indicate
 # blink and then a second constant for the number of consecutive
 # frames the eye must be below the threshold
-EYE_AR_THRESH = 0.25
+EYE_AR_THRESH = 0.5
 EYE_AR_CONSEC_FRAMES = 3
 
 # initialize the frame counters and the total number of blinks
@@ -60,6 +53,9 @@ predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 # right eye, respectively
 (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
 (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
+
+print(lStart, lEnd)
+print(rStart, rEnd)
 
 # start the video stream thread
 print("[INFO] starting video stream thread...")
@@ -117,6 +113,8 @@ while True:
 			rightEye = shape[rStart:rEnd]
 			leftEAR = eye_aspect_ratio(leftEye)
 			rightEAR = eye_aspect_ratio(rightEye)
+
+			print(leftEye, rightEye, leftEAR, rightEAR)
 
 			# average the eye aspect ratio together for both eyes
 			ear = (leftEAR + rightEAR) / 2.0
