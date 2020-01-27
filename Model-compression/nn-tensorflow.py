@@ -95,102 +95,81 @@ for i in range(len(traffic_signs)):
 
 plt.show()
 '''
+images_flatten = np.array([image.flatten() for image in images28])
+
+print(images28.shape)
+print(images_flatten.shape)
+
 
 # NEURAL NETWORK
 ###################################################################################################
 # Initialize placeholders 
-x = tf.placeholder(dtype = tf.float32, shape = [None, 28, 28])
-y = tf.placeholder(dtype = tf.int32, shape = [None])
+x = tf.placeholder(dtype = tf.float32, shape = [None, 784]) # 784 despues de flatten 28x28
+y = tf.placeholder(dtype = tf.float32, shape = [None, 62])
 
-# Flatten the input data
-images_flat = tf.contrib.layers.flatten(x)
+# capa 1
+w_1 = tf.Variable(tf.truncated_normal(shape=[784, 512], stddev = 0.2))
+b_1 = tf.Variable(tf.zeros(shape=[512]))
 
-# Fully connected layer 
-logits = tf.contrib.layers.fully_connected(images_flat, 62, tf.nn.relu)
+# capa 2
+w_2 = tf.Variable(tf.truncated_normal(shape=[512, 62], stddev = 0.2))
+b_2 = tf.Variable(tf.zeros(shape=[62]))
 
-# Define a loss function
-loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels = y, 
-                                                                    logits = logits))
-# Define an optimizer 
-train_op = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
+z_1 = tf.matmul(x, w_1) + b_1
+a_1 = tf.nn.relu(z_1) # relu como funcion de activacion para esta capa
 
-# Convert logits to label indexes
-correct_pred = tf.argmax(logits, 1)
+z_2 = tf.matmul(z_1, w_2) + b_2
+y_  = z_2
 
-# Define an accuracy metric
-accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+# funcion costo
+cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits = y_, labels = y))
 
-print("images_flat: ", images_flat)
-print("logits: ", logits)
-print("loss: ", loss)
-print("predicted_labels: ", correct_pred)
+# predicciones
+train_pred = tf.nn.softmax(y_)
 
+# optimizador
+opt = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+
+# one hot transformation
+a = np.array(labels)
+labels_one_hot = np.zeros((a.size, a.max()+1))
+labels_one_hot[np.arange(a.size),a] = 1
+print(labels_one_hot.shape)
 
 # running
 ###################################################################################################
-tf.set_random_seed(1234)
 sess = tf.Session()
-
 sess.run(tf.global_variables_initializer())
 
-for i in range(201):
-        print('EPOCH', i)
-        _, accuracy_val = sess.run([train_op, accuracy], feed_dict={x: images28, y: labels})
+def precision(predicciones, etiquetas):
+    return (100.0 * np.sum(np.argmax(predicciones, 1) == np.argmax(etiquetas, 1))
+          / predicciones.shape[0])
+
+
+for i in range(2000):
+        #print('EPOCH', i)
+        _,costo,predicciones = sess.run([opt, cross_entropy, train_pred], feed_dict={x: images_flatten, y: labels_one_hot})
         if i % 10 == 0:
-            print("Loss: ", loss)
-        print('DONE WITH EPOCH')
+            print("Costo del minibatch hasta el paso %d: %f" % (i, costo))
+            print("Precision en el conjunto de entrenamiento: %.1f%%" % precision(predicciones, labels_one_hot))            
+            print("\n")
+        #print('DONE WITH EPOCH')
 
+'''
+%%time 
 
-# testing
-###################################################################################################
+pasos = 5000
 
-# Pick 10 random images
-sample_indexes = random.sample(range(len(images28)), 10)
-sample_images = [images28[i] for i in sample_indexes]
-sample_labels = [labels[i] for i in sample_indexes]
+print("Entrenamiento:")
+for i in range(pasos):
+    batch = mnist.train.next_batch(100)
+    _,costo,predicciones =  sess.run([opt, cross_entropy, train_pred],  feed_dict={x: batch[0], y: batch[1]})
+    
+    if (i % 500 == 0):
+        print("Costo del minibatch hasta el paso %d: %f" % (i, costo))
+        print("Precision en el conjunto de entrenamiento: %.1f%%" % precision(predicciones, batch[1]))
+        print("Precision en el conjunto de validacion: %.1f%%" % precision(
+        valid_pred.eval(session=sess), mnist.validation.labels))
+        print("\n")
 
-# Run the "correct_pred" operation
-predicted = sess.run([correct_pred], feed_dict={x: sample_images})[0]
-                        
-# Print the real and predicted labels
-print(sample_labels)
-print(predicted)
-
-# Display the predictions and the ground truth visually.
-fig = plt.figure(figsize=(10, 10))
-for i in range(len(sample_images)):
-    truth = sample_labels[i]
-    prediction = predicted[i]
-    plt.subplot(5, 2,1+i)
-    plt.axis('off')
-    color='green' if truth == prediction else 'red'
-    plt.text(40, 10, "Truth:        {0}\nPrediction: {1}".format(truth, prediction), 
-             fontsize=12, color=color)
-    plt.imshow(sample_images[i],  cmap="gray")
-
-plt.show()
-
-
-
-# Load the test data
-test_images, test_labels = load_data(test_data_directory)
-
-# Transform the images to 28 by 28 pixels
-test_images28 = [transform.resize(image, (28, 28)) for image in test_images]
-
-# Convert to grayscale
-test_images28 = rgb2gray(np.array(test_images28))
-
-# Run predictions against the full test set.
-predicted = sess.run([correct_pred], feed_dict={x: test_images28})[0]
-
-# Calculate correct matches 
-match_count = sum([int(y == y_) for y, y_ in zip(test_labels, predicted)])
-
-# Calculate the accuracy
-accuracy = match_count / len(test_labels)
-
-# Print the accuracy
-print("Accuracy: {:.3f}".format(accuracy))
-
-sess.close()
+'''
