@@ -41,7 +41,7 @@ predictor = dlib.shape_predictor('../models/data_shape_predictor_68_face_landmar
 (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
 (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
 
-cap = cv2.VideoCapture('blink_detection_demo.mp4')
+cap = cv2.VideoCapture('/home/vicente/datasets/SISO/Drowsy/H264_20191230_065315_CH1.AVI_ROTATE.AVI')
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 
