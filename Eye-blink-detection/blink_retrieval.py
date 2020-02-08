@@ -1,4 +1,4 @@
-# algorithmo propuesto por : A Realistic Dataset and Baseline Temporal Model for Early Drowsiness Detection
+# Este algoritmo solo detecta los parpadeos segun la duracion y valor de loa EARs
 
 
 from scipy.spatial import distance as dist
@@ -69,13 +69,13 @@ TOTAL = 0
 
 print("[INFO] loading facial landmark predictor...")
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
+predictor = dlib.shape_predictor('../models/data_shape_predictor_68_face_landmarks.dat')
 
 
 (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
 (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
 
-cap = cv2.VideoCapture('/home/vicente/datasets/somnolencia/Fold3_part2/36/10.mp4')
+cap = cv2.VideoCapture('blink_detection_demo.mp4')
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))
 
