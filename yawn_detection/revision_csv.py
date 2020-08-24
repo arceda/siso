@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import sys
 
-path_db = "/home/vicente/datasets/NTHU_IMG/4_classes_4k/"
+path_db = "/home/vicente/datasets/NTHU_IMG/4_classes_40k/"
 path_db = sys.argv[1]
 
 files_yawn = glob.glob(path_db + "yawning/*")

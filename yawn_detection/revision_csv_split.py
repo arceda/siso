@@ -5,8 +5,9 @@ import numpy as np
 import pandas as pd
 import sys
 import os
+from shutil import copyfile
 
-path_db = "/home/vicente/datasets/NTHU_IMG/4_classes_4k/"
+path_db = "/home/vicente/datasets/NTHU_IMG/4_classes_40k/"
 path_csv = "yawning_revision.csv"
 path_db = sys.argv[1]
 path_csv = sys.argv[2]
