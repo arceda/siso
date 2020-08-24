@@ -47,7 +47,8 @@ path_db = sys.argv[1]
 epochs = int(sys.argv[2])
 batch_size = int(sys.argv[3])
 
-#python3 yawn_detection/train.py "/home/vicente/datasets/NTHU_IMG/yawn/" 2  64
+#python3 yawn_detection/deploy.py "/home/vicente/datasets/NTHU_IMG/yawn/" 2  64
+#python3 yawn_detection/deploy.py "/mnt/disk1/datasets/NTHU_IMG/yawn/" 50 128
 
 #########################################################################################################
 #########################################################################################################
