@@ -16,11 +16,17 @@ files_yawn_incorrect = glob.glob(path_db + "yawning_incorrect/*")
 data = []
 for file in files_yawn:
     file_name = file.split("/")[-1]
-    data.append([file_name, "ok"])
+    if "(copy)" in file:
+        pass
+    else:
+        data.append([file_name, "ok"])
 
 for file in files_yawn_incorrect:
     file_name = file.split("/")[-1]
-    data.append([file_name, "error"])
+    if "(copy)" in file:
+        pass
+    else:
+        data.append([file_name, "error"])
 
 data = np.array(data)
 
