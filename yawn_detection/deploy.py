@@ -25,6 +25,7 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten
 from keras.utils import to_categorical
 from keras.utils.vis_utils import plot_model
+from keras.models import load_model
 
 #from keras.layers.core import Dense, Dropout, Activation, Flatten
 
@@ -96,8 +97,6 @@ print("labels: ", labels)
 
 samples_num, img_rows, img_cols, img_channels = X.shape
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1)
-
 #########################################################################################################
 #########################################################################################################
 
@@ -141,27 +140,8 @@ history = classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', m
 #########################################################################################################
 
 # train
-history = classifier.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
+history = classifier.fit(X, y, epochs=epochs, batch_size=batch_size, validation_split=0.2)
 
-#########################################################################################################
-#########################################################################################################
-plt.clf()
-fig, ax = plt.subplots(2,1, figsize=(18, 10))
-ax[0].plot(history.history['loss'], color='b', label="Training loss")
-ax[0].plot(history.history['val_loss'], color='r', label="validation loss",axes =ax[0])
-legend = ax[0].legend(loc='best', shadow=True)
+classifier.save(current_dir + '/results/model_epoch='+ str(epochs) +'.h5')
 
-ax[1].plot(history.history['accuracy'], color='b', label="Training accuracy")
-ax[1].plot(history.history['val_accuracy'], color='r',label="Validation accuracy")
-legend = ax[1].legend(loc='best', shadow=True)
-
-plt.savefig(current_dir + '/results/history_epoch='+ str(epochs) +'.png', dpi = 300)
-#########################################################################################################
-#########################################################################################################
-
-results = classifier.evaluate(X_test, y_test)
-print(results)
-print(classifier.metrics_names)
-
-with open(current_dir + '/results/history_epoch='+ str(epochs) +'.txt', "a") as myfile:
-    myfile.write("\n " + 'epoch='+ str(epochs) + ' ' + str(results))
+print("finish")
