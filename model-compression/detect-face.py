@@ -1,5 +1,7 @@
 import cv2
+
 from mtcnn import MTCNN
+
 
 def get_biggest_face(faces):
     biggest_width = 0
@@ -62,11 +64,13 @@ cv2.waitKey(0)
 cv2.destroyAllWindows() 
 '''
 detector = MTCNN()
-cap = cv2.VideoCapture('../Eye-blink-detection/blink_detection_demo.mp4')
+cap = cv2.VideoCapture('../eye-blink-detection/blink_detection_demo.mp4')
 
 while True:
+
     ret, frame = cap.read()
     if ret == True: 
+
         img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         faces = detector.detect_faces(img)
 
