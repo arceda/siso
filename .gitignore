@@ -68,3 +68,4 @@ DrowsyDriverDetection/yawn_mouths.pickle
 yawn_eye/open_eyes.pickle
 yawn_eye/closed_eyes.pickle
 yawn_eye/yawn_mouths.pickle
+yawn_detection/results/output.avi

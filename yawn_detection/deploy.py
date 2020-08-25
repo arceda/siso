@@ -143,6 +143,6 @@ history = classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', m
 # train
 history = classifier.fit(X, y, epochs=epochs, batch_size=batch_size, validation_split=0.2)
 
-classifier.save(current_dir + '/results/model_epoch='+ str(epochs) +'.h5')
+classifier.save(current_dir + '/models/model_epoch='+ str(epochs) +'.h5')
 
 print("finish")
