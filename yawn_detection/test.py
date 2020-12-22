@@ -53,11 +53,17 @@ model  = load_model(current_dir + "/models/model_epoch=50.h5")
 #cap = cv2.VideoCapture('/home/vicente/datasets/NTHU/testing/018_noglasses_mix.mp4')
 
 path_video = sys.argv[1]
+minute = sys.argv[2]
+second = sys.argv[3]
+
 cap = cv2.VideoCapture(path_video)
 
-# test.py /home/vicente/datasets/NTHU/testing/018_noglasses_mix.mp4
+# test.py /home/vicente/datasets/NTHU/testing/020_glasses_yawning.mp4 0 1
+# test.py /home/vicente/datasets/NTHU/testing/003_noglasses_mix.mp4 2 48
+# test.py /home/vicente/datasets/NTHU/testing/018_noglasses_mix.mp4 2 30
+# test.py /home/vicente/datasets/NTHU/testing/videoplayback.mp4 0 1
 
-min = 2; seg = 30
+min = int(minute); seg = int(second)
 frame_yawning = min*60*30 + seg*30 # minuto 2:30
 cap.set(1,frame_yawning)
 
