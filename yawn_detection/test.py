@@ -56,12 +56,13 @@ path_video = sys.argv[1]
 minute = sys.argv[2]
 second = sys.argv[3]
 
-cap = cv2.VideoCapture(path_video)
+#cap = cv2.VideoCapture(path_video)
+cap = cv2.VideoCapture(0)
 
-# test.py /home/vicente/datasets/NTHU/testing/020_glasses_yawning.mp4 0 1
-# test.py /home/vicente/datasets/NTHU/testing/003_noglasses_mix.mp4 2 48
-# test.py /home/vicente/datasets/NTHU/testing/018_noglasses_mix.mp4 2 30
-# test.py /home/vicente/datasets/NTHU/testing/videoplayback.mp4 0 1
+# python3 test.py /home/vicente/datasets/NTHU/testing/020_glasses_yawning.mp4 0 1
+# python3 test.py /home/vicente/datasets/NTHU/testing/003_noglasses_mix.mp4 2 48
+# python3 test.py /home/vicente/datasets/NTHU/testing/018_noglasses_mix.mp4 2 30
+# python3 test.py /home/vicente/datasets/NTHU/testing/videoplayback.mp4 0 1
 
 min = int(minute); seg = int(second)
 frame_yawning = min*60*30 + seg*30 # minuto 2:30
@@ -97,8 +98,8 @@ while(cap.isOpened()):
     else:
         break
 
-cap.release()
-out.release()
-cv2.destroyAllWindows()
+#cap.release()
+#out.release()
+#cv2.destroyAllWindows()
 
 #2:48
