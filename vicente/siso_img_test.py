@@ -3,7 +3,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from glob import glob
-from sklearn.model_selection import train_test_split
+#from sklearn.model_selection import train_test_split
 import os
 import shutil
 import time
