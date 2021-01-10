@@ -1,28 +1,18 @@
 import numpy as np
-from PIL import Image
-import matplotlib.pyplot as plt
-import tensorflow as tf
-from glob import glob
-#from sklearn.model_selection import train_test_split
-import os
-import shutil
-import time
+from keras.preprocessing import image
 from keras.models import Model
 from keras.layers import Dense, GlobalAveragePooling2D, Dropout
 from keras.applications.inception_v3 import InceptionV3, preprocess_input
-from keras.preprocessing.image import ImageDataGenerator
-from skimage import io
-import os
-from PIL import Image
-from keras.preprocessing import image
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import keras
 import sys
 
+import tensorflow as tf
+
 path_model = sys.argv[1]
 path_image = sys.argv[2]
-# python3 siso_img.py ../models/model_inception_siso_with_nthu_10k_with_2class.h5 /home/vicente/datasets/SISO/IMG/TEST/dormido/glasses_corregido8292.jpg
+# python3 siso_img_test.py ../models/model_inception_siso_with_nthu_10k_with_2class.h5 /home/vicente/datasets/SISO/IMG/TEST/dormido/glasses_corregido8292.jpg
 
 def predict(model, img):
     """Run model prediction on image

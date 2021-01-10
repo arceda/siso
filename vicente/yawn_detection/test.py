@@ -38,7 +38,7 @@ import glob
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-model  = load_model(current_dir + "/models/model_epoch=50.h5")
+model  = load_model(current_dir + "../../models/model_yawn.h5")
 
 #cap = cv2.VideoCapture('/home/vicente/datasets/NTHU/testing/videoplayback.mp4')
 #cap = cv2.VideoCapture('/home/vicente/datasets/NTHU/testing/020_glasses_yawning.avi')
