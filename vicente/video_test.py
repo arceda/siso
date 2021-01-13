@@ -71,6 +71,10 @@ now = datetime.datetime.now()
 log_file_name = now.strftime("log_%Y-%m-%d_%H:%M:%S.txt")
 file_log = open(args.path_output + "/" + log_file_name, "a+")
 
+if int(args.window) == 1:
+    cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
+    cv2.setWindowProperty('frame', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
 while(cap.isOpened()):
     ret, frame = cap.read()
     if ret:
