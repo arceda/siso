@@ -4,11 +4,14 @@ from keras.models import Model
 from keras.layers import Dense, GlobalAveragePooling2D, Dropout
 from keras.applications.inception_v3 import InceptionV3, preprocess_input
 import keras
-import cv2
+
 import sys
 from argparse import ArgumentParser
 import datetime;
 import tensorflow as tf
+
+import cv2
+
 
 def predict(model, img):
     x = image.img_to_array(img)
