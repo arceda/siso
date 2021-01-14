@@ -73,7 +73,8 @@ file_log = open(args.path_output + "/" + log_file_name, "a+")
 
 if int(args.window) == 1:
     cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
-    cv2.setWindowProperty('frame', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    #cv2.setWindowProperty('frame', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    cv2.resizeWindow('frame', 1200,800)
 
 while(cap.isOpened()):
     ret, frame = cap.read()
