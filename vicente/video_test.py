@@ -11,6 +11,7 @@ import datetime;
 import tensorflow as tf
 
 import cv2
+import os
 
 
 def predict(model, img):
@@ -19,6 +20,18 @@ def predict(model, img):
     x = preprocess_input(x)
     preds = model.predict(x)
     return preds[0]
+
+def write_log(drowsy_prop, non_drowsy_prop, yawn_prop, frame, file_log):
+    # perfom action to store img of drowsy
+    print("drowsy detected: ", drowsy_prop)    
+
+    now = datetime.datetime.now()
+    img_file_name = now.strftime("img_%Y-%m-%d_%H:%M:%S.%f.jpg")
+    file_log.write("\nimg_file_name:\t\t" + img_file_name )
+    file_log.write("\ndrowsy_prop:\t\t" + str(drowsy_prop))
+    file_log.write("\nnon_drowsy_prop:\t" + str(non_drowsy_prop))
+    #file_log.write("\nyawn_prop:\t\t" + str(yawn_prop) + "\n")               
+    cv2.imwrite(args.path_output + "/" + img_file_name, frame)
 
 ##################################################################
 # arguments
@@ -35,6 +48,8 @@ print(args.path_model_1)
 print(args.path_model_2)
 print(args.path_video)
 print(args.path_output)
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
 #path_model_1 = sys.argv[1]
 #path_model_2 = sys.argv[2]
@@ -57,6 +72,9 @@ print("model paul loaded")
 model_yawn = keras.models.load_model(args.path_model_2)
 print("model yawn loaded")
 
+model_face = cv2.dnn.readNetFromCaffe(current_dir + "/../models/deploy.prototxt.txt", current_dir + "/../models/res10_300x300_ssd_iter_140000.caffemodel")
+print("model face detection loaded")
+
 try:
     if args.path_video == None:
         cap = cv2.VideoCapture(0)    
@@ -70,6 +88,7 @@ drowsy_prop = 0
 non_drowsy_prop = 0
 yawn_prop = 0
 
+faces_detected = False
 now = datetime.datetime.now()
 log_file_name = now.strftime("log_%Y-%m-%d_%H:%M:%S.txt")
 file_log = open(args.path_output + "/" + log_file_name, "a+")
@@ -79,44 +98,60 @@ if int(args.window) == 1:
     #cv2.setWindowProperty('frame', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
     cv2.resizeWindow('frame', 1200,800)
 
+
+
 while(cap.isOpened()):
     ret, frame = cap.read()
     if ret:
         if frame_count % STEP_FRAME_RATE == 0:
-            #############################################################
-            # detect drowsy, paul model            
-            img = cv2.resize(frame, (WIDTH,HEIGHT))
-            (drowsy_prop, non_drowsy_prop) = predict(model, img) 
-            #############################################################
 
             #############################################################
-            # detect yawn            
-            img_yawn = cv2.resize(frame, (64,64))
-            X = np.array([img_yawn])
-            yawn_prop =  model_yawn.predict(X)[0][0]
-            #############################################################
-
-            drowsy_prop = round(drowsy_prop, 2)
-            non_drowsy_prop = round(non_drowsy_prop, 2)
-            yawn_prop = round(yawn_prop, 2)
-
-            if yawn_prop > 0.6 or drowsy_prop > 0.54:
-                # perfom action to store img of drowsy
-                print("drowsy yawn detected!!!")
-                print(drowsy_prop, non_drowsy_prop, yawn_prop)             
-                now = datetime.datetime.now()
-                img_file_name = now.strftime("img_%Y-%m-%d_%H:%M:%S.%f.jpg")
-                file_log.write("\nimg_file_name:\t\t" + img_file_name )
-                file_log.write("\ndrowsy_prop:\t\t" + str(drowsy_prop))
-                file_log.write("\nnon_drowsy_prop:\t" + str(non_drowsy_prop))
-                file_log.write("\nyawn_prop:\t\t" + str(yawn_prop) + "\n")               
-                cv2.imwrite(args.path_output + "/" + img_file_name, frame)
+            # detect if ther is faces 
+            blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
+            model_face.setInput(blob)
+            detections = model_face.forward()
+            (h, w) = frame.shape[:2]
+            faces_detected =  True
             
+            max_prop_face =  np.amax(detections[0, 0, :, 2], axis=0) 
+            if max_prop_face > 0.9:                       
+
+                #############################################################
+                # detect drowsy, paul model            
+                img = cv2.resize(frame, (WIDTH,HEIGHT))
+                (drowsy_prop, non_drowsy_prop) = predict(model, img) 
+                #############################################################
+
+                #############################################################
+                # detect yawn            
+                #img_yawn = cv2.resize(frame, (64,64))
+                #X = np.array([img_yawn])
+                #yawn_prop =  model_yawn.predict(X)[0][0]
+                #############################################################
+
+                drowsy_prop = round(drowsy_prop, 2)
+                non_drowsy_prop = round(non_drowsy_prop, 2)
+                #yawn_prop = round(yawn_prop, 2)
+
+                #if yawn_prop > 0.6 or drowsy_prop > 0.54:
+                #    write_log(drowsy_prop, non_drowsy_prop, yawn_prop, frame, file_log)
+                if drowsy_prop > 0.70:
+                    write_log(drowsy_prop, non_drowsy_prop, yawn_prop, frame, file_log)
+                    
+        if faces_detected:
+            # draw rects for faces
+            for i in range(0, detections.shape[2]):
+                confidence = detections[0, 0, i, 2]                    
+                if confidence > 0.90:                        
+                    box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+                    (startX, startY, endX, endY) = box.astype("int")                        
+                    cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 0, 255), 2)
+
 
         cv2.rectangle(frame, (0,0), (180, 60), (255,255,255), -1)
         cv2.putText(frame, "drowsy:     " + str(drowsy_prop), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2) 
         cv2.putText(frame, "no-drowsy: " + str(non_drowsy_prop), (10, 35), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)    
-        cv2.putText(frame, "yawn:       " + str(yawn_prop), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 200, 0), 2)    
+        #cv2.putText(frame, "yawn:       " + str(yawn_prop), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 200, 0), 2)    
 
         if int(args.window) == 1:
             cv2.imshow('frame',frame)
