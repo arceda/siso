@@ -73,3 +73,4 @@ yawn_detection/results/output.mp4
 signal/angles.png
 models/model_inception_siso_with_nthu_10k_with_2class.h5
 output/*
+vicente/log.txt

@@ -21,17 +21,22 @@ def predict(model, img):
     preds = model.predict(x)
     return preds[0]
 
-def write_log(drowsy_prop, non_drowsy_prop, yawn_prop, frame, file_log):
+def write_log(drowsy_prop, non_drowsy_prop, yawn_prop, frame):
     # perfom action to store img of drowsy
-    print("drowsy detected: ", drowsy_prop)    
+      
 
     now = datetime.datetime.now()
     img_file_name = now.strftime("img_%Y-%m-%d_%H:%M:%S.%f.jpg")
-    file_log.write("\nimg_file_name:\t\t" + img_file_name )
-    file_log.write("\ndrowsy_prop:\t\t" + str(drowsy_prop))
-    file_log.write("\nnon_drowsy_prop:\t" + str(non_drowsy_prop))
-    #file_log.write("\nyawn_prop:\t\t" + str(yawn_prop) + "\n")               
+    #print("\nimg_file_name:\t\t" + img_file_name)
+    #print("\ndrowsy_prop:\t\t" + str(drowsy_prop))
+    #print("\nnon_drowsy_prop:\t" + str(non_drowsy_prop) + "\n")
+    #file_log.write("\nimg_file_name:\t\t" + img_file_name )
+    #file_log.write("\ndrowsy_prop:\t\t" + str(drowsy_prop))
+    #file_log.write("\nnon_drowsy_prop:\t" + str(non_drowsy_prop) + "\n")
+    #file_log.write("\nyawn_prop:\t\t" + str(yawn_prop) + "\n")    
+    #file_log.flush()           
     cv2.imwrite(args.path_output + "/" + img_file_name, frame)
+    print("drowsy detected: ", drowsy_prop, "\tfile: ", img_file_name)  
 
 ##################################################################
 # arguments
@@ -90,8 +95,8 @@ yawn_prop = 0
 
 faces_detected = False
 now = datetime.datetime.now()
-log_file_name = now.strftime("log_%Y-%m-%d_%H:%M:%S.txt")
-file_log = open(args.path_output + "/" + log_file_name, "a+")
+#log_file_name = now.strftime("log_%Y-%m-%d_%H:%M:%S.txt")
+#file_log = open(args.path_output + "/" + log_file_name, "w+")
 
 if int(args.window) == 1:
     cv2.namedWindow('frame', cv2.WINDOW_NORMAL)
@@ -99,6 +104,9 @@ if int(args.window) == 1:
     cv2.resizeWindow('frame', 1200,800)
 
 
+print("\n Starting SISO analysis...\n ")
+#file_log.write("\n Starting SISO analysis...\n ")
+#file_log.flush()
 
 while(cap.isOpened()):
     ret, frame = cap.read()
@@ -136,7 +144,11 @@ while(cap.isOpened()):
                 #if yawn_prop > 0.6 or drowsy_prop > 0.54:
                 #    write_log(drowsy_prop, non_drowsy_prop, yawn_prop, frame, file_log)
                 if drowsy_prop > 0.70:
-                    write_log(drowsy_prop, non_drowsy_prop, yawn_prop, frame, file_log)
+                    write_log(drowsy_prop, non_drowsy_prop, yawn_prop, frame)
+                else:
+                    #file_log.write("\n no drowsy")                    
+                    #file_log.flush()
+                    print("non drowsy")                    
                     
         if faces_detected:
             # draw rects for faces
@@ -163,6 +175,9 @@ while(cap.isOpened()):
 
     else:
         break
+
+
+
 
 file_log.close() 
 cap.release()
