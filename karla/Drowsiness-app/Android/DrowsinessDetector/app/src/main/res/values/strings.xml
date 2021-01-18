@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Drowsiness Detector</string>
+    <string name="login_button">Log In</string>
+    <string name="password_button">Password</string>
+    <string name="username_button">Username</string>
+    <string name="start_camera_button">Record</string>
+    <string name="stop_camera_button">Stop Camera</string>
+    <string name="start_detector">Start Drowsiness Detector</string>
+    <string name="welcome_display">Welcome,</string>
+    <string name="username">Username</string>
+    <string name="streak_label">Streak</string>
+</resources>
