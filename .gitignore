@@ -74,3 +74,9 @@ signal/angles.png
 models/model_inception_siso_with_nthu_10k_with_2class.h5
 output/*
 vicente/log.txt
+karla/Drowsiness-video/__pycache__/data.cpython-38.pyc
+.gitignore
+karla/Drowsiness-video/data/logs/lstm-training-1612358612.3653734.log
+karla/Drowsiness-video/data/logs/lstm/train/events.out.tfevents.1612358621.vicente-ASUS.11918.745.v2
+models/modelSiso_y_NTHU_Inception3.h5
+karla/Drowsiness-video/__pycache__/models.cpython-38.pyc

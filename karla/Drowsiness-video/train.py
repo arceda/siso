@@ -60,7 +60,7 @@ def train(batch_size=4, nb_epoch=10):
     loss, accuracy = rm.model.evaluate(X_test, y_test)
 
     # save
-    # rm.model.save('my_model.h5')   # HDF5 file, you have to pip3 install h5py if don't have it
+    rm.model.save('my_model_.h5')   # HDF5 file, you have to pip3 install h5py if don't have it
 	# del model  # deletes the existing model
 
     # print 'Loss:',loss*100,'%'

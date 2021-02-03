@@ -128,7 +128,8 @@ import re
 import sys
 
 import numpy as np
-import tensorflow as tf
+#import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import tensorflow_hub as hub
 
 
@@ -779,8 +780,10 @@ def add_final_retrain_ops(class_count, final_tensor_name, bottleneck_tensor,
   if quantize_layer:
     if is_training:
       tf.contrib.quantize.create_training_graph()
+      #tf.quantization.quantize.create_training_graph()
     else:
       tf.contrib.quantize.create_eval_graph()
+      #tf.quantization.quantize.create_eval_graph()
 
   tf.summary.histogram('activations', final_tensor)
 
