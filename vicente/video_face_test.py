@@ -59,7 +59,7 @@ def draw_face(img):
 
     shape = 0
     for k,rect in enumerate(detections): 
-        print("face at pos:", rect.left(), rect.top(), rect.right(), rect.bottom())
+        #print("face at pos:", rect.left(), rect.top(), rect.right(), rect.bottom())
         shape = predictor(img, rect) #Get coordinates
         for i in range(1,68): #There are 68 landmark points on each face
             cv2.circle(img, (shape.part(i).x, shape.part(i).y), 1, (0,0,255), thickness=2)
@@ -174,14 +174,55 @@ if int(args.window) == 1:
 
 current_faces_rec = []
 
+faces_caffe = 0
+faces_dlib = 0
+
 while(cap.isOpened()):
     ret, frame = cap.read()
     if ret:    
         #frame = cv2.resize(frame, (WIDTH, HEIGHT))
+        h,w,c = frame.shape
 
         if frame_count % STEP_FRAME_RATE == 0:            
-            current_faces_rec = detect_faces(model_face, frame)  # detect faces 
+            #current_faces_rec = detect_faces(model_face, frame)  # detect faces 
+            current_faces_rec = detector(frame, 1) # detect face with dlib
 
+            #if len(current_faces_rec) > 0:
+            #    faces_caffe += 1
+            #if len(detections) > 0:
+            #    faces_dlib += 1
+            #print("frame ", frame_count, " faces caffe:", len(current_faces_rec), " faces dlib:", len(detections))
+            #print(faces_caffe, faces_dlib)
+
+            # faces with dlib
+            for rect in current_faces_rec:
+                face_width = rect.right() - rect.left()
+                face_height = rect.bottom() - rect.top()
+                pad = int(0.25*face_width)
+
+                y1 = rect.top() - pad if rect.top() - pad > 0 else 0
+                y2 = rect.bottom() + pad if rect.bottom() + pad < h else h
+                x1 = rect.left() - pad if rect.left() - pad > 0 else 0
+                x2 = rect.right() + pad if rect.right() + pad < w else w
+
+                face = frame[y1:y2, x1:x2].copy() 
+                face = cv2.resize(face, (224,224))                        
+                drowsy_prop = round(predict(model, face), 3)  
+
+                if drowsy_prop > 0.70 and args.path_output != '':
+                    write_log(drowsy_prop, yawn_prop, frame, file_log)
+
+                shape = predictor(frame, rect) #Get coordinates
+                for i in range(1,68): #There are 68 landmark points on each face
+                    cv2.circle(face, (shape.part(i).x, shape.part(i).y), 1, (0,0,255), thickness=2)    
+
+                frame = draw_box(frame, rect.left(), rect.top(), rect.right(), rect.bottom(), drowsy_prop)
+            
+            if len(current_faces_rec) > 0 and args.window:
+                cv2.imshow("face", face)
+
+            # facewith caffe model
+            '''
             for face_rec in current_faces_rec:    
                 face = frame[face_rec[1]-100:face_rec[3]+100, face_rec[0]-100:face_rec[2]+100].copy() 
                 draw_face(face)
@@ -194,10 +235,12 @@ while(cap.isOpened()):
                 if drowsy_prop > 0.70 and args.path_output != '':
                     write_log(drowsy_prop, yawn_prop, frame, file_log)
                 frame = draw_box(frame, face_rec[0], face_rec[1], face_rec[2], face_rec[3], drowsy_prop)                      
-                    
+            '''        
         else:
-            for face_rec in current_faces_rec:    
-                frame = draw_box(frame, face_rec[0], face_rec[1], face_rec[2], face_rec[3], drowsy_prop) 
+            #for face_rec in current_faces_rec:    
+            #    frame = draw_box(frame, face_rec[0], face_rec[1], face_rec[2], face_rec[3], drowsy_prop) 
+            for rect in current_faces_rec:
+                frame = draw_box(frame, rect.left(), rect.top(), rect.right(), rect.bottom(), drowsy_prop)
        
         cv2.rectangle(frame, (0,0), (180, 60), (255,255,255), -1)
         cv2.putText(frame, "drowsiness: " + str(drowsy_prop), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2) 
