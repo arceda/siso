@@ -22,7 +22,7 @@ def predict(model, img):
     return preds[0][0]
     #return preds
 
-def detect_faces(model_face, frame):
+def detect_faces(frame):
     current_faces = []
     (h, w) = frame.shape[:2]
     #############################################################
@@ -33,15 +33,104 @@ def detect_faces(model_face, frame):
 
     for i in range(0, detections.shape[2]):
         confidence = detections[0, 0, i, 2]                    
-        if confidence > 0.90: 
+        if confidence > 0.80: 
             box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
             (startX, startY, endX, endY) = box.astype("int")   
             current_faces.append( [startX, startY, endX, endY] )   
 
     return current_faces
 
+# return the biggest face in frame using dlib
+def get_face_caffe(frame):
+    current_faces = []
+    areas = []
+    h, w, c = frame.shape
+    #############################################################
+    # detect if ther is faces 
+    blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
+    model_face.setInput(blob)
+    detections = model_face.forward()
 
-def draw_box(frame, x, y, x_end, y_end, prop_drowsy):
+    for i in range(0, detections.shape[2]):
+        confidence = detections[0, 0, i, 2]                    
+        if confidence > 0.50: 
+            box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+            (startX, startY, endX, endY) = box.astype("int")   
+            current_faces.append( [startX, startY, endX, endY] )   
+            areas.append( (endX - startX)*(endY - startY) )
+    
+    #faces_rec = np.array(faces_rec)
+    if len(areas) > 0:
+        index_max = np.argmax(areas)
+        face_rec = current_faces[index_max]        
+    else:
+        return False, None, None, None
+        
+    # con el rostro obtenido, lo extraemos del frame y pintamos
+    face_width = face_rec[2] - face_rec[0]
+    face_height = face_rec[3] - face_rec[1]
+    pad = int(0.25*face_width)
+
+    y1 = face_rec[1] - pad if face_rec[1] - pad > 0 else 0
+    y2 = face_rec[3] + pad if face_rec[3] + pad < h else h
+    x1 = face_rec[0] - pad if face_rec[0] - pad > 0 else 0
+    x2 = face_rec[2] + pad if face_rec[2] + pad < w else w          
+
+    face_img = frame[y1:y2, x1:x2].copy()
+    face_img_copy = face_img.copy()
+    # dlib ###########################################
+    if args.dlib:
+        faces_rec_dlib = detector(face_img, 1)
+        for face_rec_dlib in faces_rec_dlib:
+            shape = predictor(face_img, face_rec_dlib) #Get coordinates
+            for i in range(1,68): #There are 68 landmark points on each face
+                cv2.circle(face_img_copy, (shape.part(i).x, shape.part(i).y), 1, (0,0,255), thickness=2) 
+
+    return True, face_img, face_img_copy, face_rec
+
+# return the biggest face in frame using dlib
+def get_face(frame):
+    h, w, c = frame.shape
+    faces_rec = detector(frame, 1) # detect face with dlib
+
+    # obtenemos el rostro mas grande
+    areas = []
+    for rec in faces_rec:
+        areas.append( (rec.bottom() - rec.top())*(rec.right() - rec.left()) )
+    
+    #faces_rec = np.array(faces_rec)
+    if len(areas) > 0:
+        index_max = np.argmax(areas)
+        face_rec = faces_rec[index_max]        
+    else:
+        return False, None, None, None
+        
+    # con el rostro obtenido, lo extraemos del frame y pintamos
+    face_width = face_rec.right() - face_rec.left()
+    face_height = face_rec.bottom() - face_rec.top()
+    pad = int(0.25*face_width)
+
+    y1 = face_rec.top() - pad if face_rec.top() - pad > 0 else 0
+    y2 = face_rec.bottom() + pad if face_rec.bottom() + pad < h else h
+    x1 = face_rec.left() - pad if face_rec.left() - pad > 0 else 0
+    x2 = face_rec.right() + pad if face_rec.right() + pad < w else w
+    
+    frame_copy = frame.copy()
+
+    shape = predictor(frame, face_rec) #Get coordinates
+    for i in range(1,68): #There are 68 landmark points on each face
+        cv2.circle(frame_copy, (shape.part(i).x, shape.part(i).y), 1, (0,0,255), thickness=2) 
+
+    face_img = frame[y1:y2, x1:x2].copy()
+    face_img_painted = frame_copy[y1:y2, x1:x2]
+
+    return True, face_img, face_img_painted, (face_rec.left(), face_rec.top(), face_rec.right(), face_rec.bottom())
+
+def draw_box(frame, rec, prop_drowsy):
+    x = rec[0]
+    y = rec[1]
+    x_end = rec[2]
+    y_end = rec[3]
     if prop_drowsy > 0.70:
         cv2.putText(frame, "ALERT ", (x + 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 4) 
 
@@ -173,74 +262,33 @@ if int(args.window) == 1:
 
 
 current_faces_rec = []
+res = False
 
 faces_caffe = 0
 faces_dlib = 0
 
 while(cap.isOpened()):
     ret, frame = cap.read()
-    if ret:    
-        #frame = cv2.resize(frame, (WIDTH, HEIGHT))
-        h,w,c = frame.shape
+    if ret:         
 
-        if frame_count % STEP_FRAME_RATE == 0:            
-            #current_faces_rec = detect_faces(model_face, frame)  # detect faces 
-            current_faces_rec = detector(frame, 1) # detect face with dlib
+        if frame_count % STEP_FRAME_RATE == 0: 
+            res, face_img, face_img_painted, face_rec = get_face_caffe(frame) # caffe es mejor qdlib
 
-            #if len(current_faces_rec) > 0:
-            #    faces_caffe += 1
-            #if len(detections) > 0:
-            #    faces_dlib += 1
-            #print("frame ", frame_count, " faces caffe:", len(current_faces_rec), " faces dlib:", len(detections))
-            #print(faces_caffe, faces_dlib)
-
-            # faces with dlib
-            for rect in current_faces_rec:
-                face_width = rect.right() - rect.left()
-                face_height = rect.bottom() - rect.top()
-                pad = int(0.25*face_width)
-
-                y1 = rect.top() - pad if rect.top() - pad > 0 else 0
-                y2 = rect.bottom() + pad if rect.bottom() + pad < h else h
-                x1 = rect.left() - pad if rect.left() - pad > 0 else 0
-                x2 = rect.right() + pad if rect.right() + pad < w else w
-
-                face = frame[y1:y2, x1:x2].copy() 
-                face = cv2.resize(face, (224,224))                        
-                drowsy_prop = round(predict(model, face), 3)  
-
+            if res:
+                # predict drowsiness
+                face_img = cv2.resize(face_img, (224,224))                        
+                drowsy_prop = round(predict(model, face_img), 3)
                 if drowsy_prop > 0.70 and args.path_output != '':
-                    write_log(drowsy_prop, yawn_prop, frame, file_log)
+                    write_log(drowsy_prop, yawn_prop, frame, file_log)                 
 
-                shape = predictor(frame, rect) #Get coordinates
-                for i in range(1,68): #There are 68 landmark points on each face
-                    cv2.circle(face, (shape.part(i).x, shape.part(i).y), 1, (0,0,255), thickness=2)    
+                frame = draw_box(frame, face_rec, drowsy_prop)
+                
+                if args.window:
+                    cv2.imshow("face", face_img_painted)
 
-                frame = draw_box(frame, rect.left(), rect.top(), rect.right(), rect.bottom(), drowsy_prop)
-            
-            if len(current_faces_rec) > 0 and args.window:
-                cv2.imshow("face", face)
-
-            # facewith caffe model
-            '''
-            for face_rec in current_faces_rec:    
-                face = frame[face_rec[1]-100:face_rec[3]+100, face_rec[0]-100:face_rec[2]+100].copy() 
-                draw_face(face)
-                #face_show = frame[face_rec[1]:face_rec[3], face_rec[0]:face_rec[2]] 
-                face = cv2.resize(face, (224,224))
-                #cv2.imshow('face',face_show)
-                        
-                drowsy_prop = round(predict(model, face), 3)  
-
-                if drowsy_prop > 0.70 and args.path_output != '':
-                    write_log(drowsy_prop, yawn_prop, frame, file_log)
-                frame = draw_box(frame, face_rec[0], face_rec[1], face_rec[2], face_rec[3], drowsy_prop)                      
-            '''        
         else:
-            #for face_rec in current_faces_rec:    
-            #    frame = draw_box(frame, face_rec[0], face_rec[1], face_rec[2], face_rec[3], drowsy_prop) 
-            for rect in current_faces_rec:
-                frame = draw_box(frame, rect.left(), rect.top(), rect.right(), rect.bottom(), drowsy_prop)
+            if res:
+                frame = draw_box(frame, face_rec, drowsy_prop)
        
         cv2.rectangle(frame, (0,0), (180, 60), (255,255,255), -1)
         cv2.putText(frame, "drowsiness: " + str(drowsy_prop), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2) 
