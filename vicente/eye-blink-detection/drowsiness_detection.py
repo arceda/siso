@@ -19,7 +19,7 @@ EYE_AR_CONSEC_FRAMES = 48
 COUNTER = 0
 
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor('../models/data_shape_predictor_68_face_landmarks.dat')
+predictor = dlib.shape_predictor('../../models/data_shape_predictor_68_face_landmarks.dat')
 
 # grab the indexes of the facial landmarks for the left and
 # right eye, respectively
@@ -85,7 +85,7 @@ def draw(frame, leftEye, rightEye, ear):
 def hisEqulColor(img):
     ycrcb=cv2.cvtColor(img,cv2.COLOR_BGR2YCR_CB)
     channels=cv2.split(ycrcb)
-    print len(channels)
+    print (len(channels))
     cv2.equalizeHist(channels[0],channels[0])
     cv2.merge(channels,ycrcb)
     cv2.cvtColor(ycrcb,cv2.COLOR_YCR_CB2BGR,img)
@@ -103,7 +103,7 @@ def adjust_gamma(image, gamma=1.0):
 
 
 
-cap = cv2.VideoCapture('/home/vicente/datasets/SISO/Drowsy/H264_20191230_233115_CH2.AVI_ROTATE.AVI')
+cap = cv2.VideoCapture('/home/vicente/datasets/SISO/nthu_normal.mp4')
 #cap = cv2.VideoCapture('/home/vicente/datasets/SISO/Drowsy/H264_20191230_065315_CH1.AVI_ROTATE.AVI')
 frame_width = int(cap.get(3))
 frame_height = int(cap.get(4))

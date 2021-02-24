@@ -69,7 +69,7 @@ TOTAL = 0
 
 print("[INFO] loading facial landmark predictor...")
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor('../models/data_shape_predictor_68_face_landmarks.dat')
+predictor = dlib.shape_predictor('../../models/data_shape_predictor_68_face_landmarks.dat')
 
 
 (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
@@ -101,6 +101,7 @@ while True:
             shape = face_utils.shape_to_np(shape)
 
             leftEye = shape[lStart:lEnd] #lista de puntos del ojo izq
+            print(leftEye)
             rightEye = shape[rStart:rEnd]
             leftEAR = eye_aspect_ratio(leftEye)
             rightEAR = eye_aspect_ratio(rightEye)
@@ -125,7 +126,7 @@ while True:
         if key == ord("q"):
             break
     else:
-		break
+	    break
 
 
 cv2.destroyAllWindows()
