@@ -104,6 +104,13 @@ def get_face_caffe(frame):
             face_img_copy = draw_landmarks(face_img_copy, shape)
             #for i in range(1,68): #There are 68 landmark points on each face
             #    cv2.circle(face_img_copy, (shape.part(i).x, shape.part(i).y), 1, (0,0,255), thickness=2) 
+        if len(faces_rec_dlib) == 0:
+            face_img_copy = cv2.resize( face_img_copy, (WIDTH_WIN_FACE, HEIGHT_WIN_FACE) )
+            img_h, img_w, ch = face_img_copy.shape    
+            pad = int(HEIGHT_WIN_FACE/2)
+            img_debug = np.zeros(( img_h, img_w + pad, 3), dtype = "uint8")  
+            img_debug[ 0:img_h, 0:img_w ] = face_img_copy
+            face_img_copy = img_debug
 
     return True, face_img, face_img_copy, face_rec
 
@@ -149,9 +156,9 @@ def draw_landmarks(img, shape):
     cv2.drawContours(img, [rightEyeHull], -1, (0, 0, 255), 2)
     cv2.drawContours(img, [mouth], -1, (0, 0, 255), 2)
 
-    img = cv2.resize( img, (400, 600) )
+    img = cv2.resize( img, (WIDTH_WIN_FACE, HEIGHT_WIN_FACE) )
     img_h, img_w, ch = img.shape    
-    pad = 300
+    pad = int(HEIGHT_WIN_FACE/2)
     img_debug = np.zeros(( img_h, img_w + pad, 3), dtype = "uint8")  
     img_debug[ 0:img_h, 0:img_w ] = img
     
@@ -354,6 +361,9 @@ MOUTH_AR_THRESH = 0.6
 EYE_AR_CONSEC_FRAMES = 3
 TOTAL_BLINKS = 0
 TOTAL_YAWNS = 0
+
+WIDTH_WIN_FACE = 400
+HEIGHT_WIN_FACE = 600
 
 model = keras.models.load_model(args.path_model_1)
 print("model paul loaded")
