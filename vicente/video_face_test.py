@@ -37,7 +37,7 @@ def predict(model, img):
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
     preds = model.predict(x)
-    return preds[0][0]
+    return 1-preds[0][0]
     #return preds
 
 def detect_faces(frame):
@@ -306,7 +306,7 @@ def draw_pads(frame, drowsy_prop, yawn_prop, frame_count):
     title = "S I S O"
     cv2.putText(frame_debug, title, ( 20 , 70), cv2.FONT_HERSHEY_TRIPLEX, font_size*2.3, (0, 255, 0), 4) 
     cv2.putText(frame_debug, "D R O W S Y  " + str(drowsy_prop), (int(fw*0.6), 40), cv2.FONT_HERSHEY_TRIPLEX, font_size, (0, 255, 0), 2) 
-    cv2.putText(frame_debug, "Y A W N  " + str(yawn_prop), (int(fw*0.6), 80), cv2.FONT_HERSHEY_TRIPLEX, font_size, (0, 255, 0), 2) 
+    #cv2.putText(frame_debug, "Y A W N  " + str(yawn_prop), (int(fw*0.6), 80), cv2.FONT_HERSHEY_TRIPLEX, font_size, (0, 255, 0), 2) 
     
     cv2.putText(frame_debug, "F R A M E    " + str(frame_count), (20, fh + upper_pad + 35), cv2.FONT_HERSHEY_TRIPLEX, font_size, (0, 255, 0), 2)
 
