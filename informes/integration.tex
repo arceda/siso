@@ -127,13 +127,17 @@
 		\label{fig:drowsy}
 	\end{figure}
 	
-	La red neuronal Inception \cite{szegedy2016rethinking} en su tercera versión, es un modelo de reconocimiento de imágenes muy utilizado, está logro una exactitud de 78.1\% en la base de datos ImageNet. 
+	La red neuronal Inception \cite{szegedy2016rethinking} en su tercera versión, es un modelo de reconocimiento de imágenes muy utilizado, está logró una exactitud de 78.1\% en la base de datos ImageNet. Debido a esto, se utilizo esta red neuronal para detectar somnolencia. \\
+	
+	La red neuronal Inception-v3 hace uso de unos módulos llamados Inception. Estos actúan como filtros aplicados a un mismo valor de entrada mediante capas convolucionales y de \textit{pooling}. Esto permite sacar provecho de la extracción de patrones que brindan diferentes tamaños en los filtros. Luego, el resultado de estos filtros es concatenado y utilizado como el valor de salida del módulo. Este modelo aumenta el número de parámetros entrenables y la computación requerida, pero mejora considerablemente la exactitud. En la Figura \ref{fig:inception}, mostramos la arquitectura de esta red.
+	
+	
 	
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=\textwidth]{img/inception}		
 		\caption{Detección de somnolencia a partir de un rostro utilizando VGG, Resnet e Inception.}
-		\label{fig:drowsy}
+		\label{fig:inception}
 	\end{figure}
 	
 	
