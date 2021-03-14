@@ -76,7 +76,7 @@
 
 	Los principales métodos de detección de somnolencia pueden dividirse en 3 grandes grupos según \cite{ramzan2019survey}. El primer grupo esta conformado por los métodos basados en procesamiento de imágenes y video, estos métodos captan la señal a partir de una cámara y utilizando algoritmos de visión computacional logran detectar la somnolencia. El segundo grupo esta conformado por los métodos que utilizan sensores en el auto, estos sensores miden la fuerza de agarre del timon, los cambios en el tiempo de los angulos de giro e incluso analizan las señales de frecuencia cardiaca. El ultimo grupo, es muy intrusivo y se basan en medidas fisiológicas como el \textit{electroencephalogram} (EEG), \textit{electrooculogram} (EOG), \textit{electromyogram} (EMG) y \textit{electrocardiogram} (ECG).\\
 	
-	SISO-VID es un método basado en comportamiento, este modulo toma como entrada una secuencia de video y dectada si alguna escena de la secuencia de video presenta somnolencia. En resumen, se ha utilizado detección de rostros con una red neuronal \textit{Single Shot Detector} (SSD), luego sobre el rostro detectado se utilizó la red neuronal \textit{Inception} para detectar somnolencia. El método propuesto logro un 90\% de accuracy sonbre la base de datos SISO-IMG, esta base de datos fue creada especificamente para este proyecto (para mas detalles, puede revisar el informe de base de datos). 
+	SISO-VID es un método basado en comportamiento, este modulo toma como entrada una secuencia de video y dectada si alguna escena de la secuencia de video presenta somnolencia. En resumen, se ha utilizado detección de rostros con una red neuronal \textit{Single Shot Detector} (SSD), luego sobre el rostro detectado se utilizó la red neuronal \textit{Inception} para detectar somnolencia. El método propuesto logro un 87\% de accuracy sonbre la base de datos SISO-IMG, esta base de datos fue creada especificamente para este proyecto (para mas detalles, puede revisar el informe de base de datos). 
 	
 	
 	
@@ -139,16 +139,83 @@
 		\caption{Detección de somnolencia a partir de un rostro utilizando VGG, Resnet e Inception.}
 		\label{fig:inception}
 	\end{figure}
+
+	\subsection{Conteo de parpadeos y bostezos}
+	De manera adicional al método propuesto para la detección de somnolencia utilizando la red neuronal Inception, se ha agregado un método que cuenta la cantidad de parpadeos y bostezos. En esta etapa, se utilizó \textit{dlib} para la detección de los \textit{landmarks} del rostro del conductor, luego con los \textit{landmarks} de los ojos y boca se puede determinar si los ojos estan cerrados o si la boca es abierta. \\
 	
+	En el caso de la detección de parpadeos, el \textit{Eye Aspect Ratio} (EAR) es calculado con la Ecuación \ref{eq:ear} (los landmarks están en la Figura \ref{fig:ear}), este valor esta entre 0(cerrado) y 1(abierto), en nuestro caso, definimos que si este EAR era menor a 0.3, se consideraba como un parpadeo.
 	
-	\section{Conclusiones y Recomendaciones}
-	\begin{itemize}
-		\item Se ha logrado revisar de los trabajos de mejor desempeño para la detección de somnolencia, estos han sido clasificados en 3 grupos, los basados en comportamiento, los basados en sensores del vehiculo y los fisiológicos. De estos, los de mejor desempeño son los fisiológicos, pero son intrusivos y los conductores no los utilizan. Los métodos basados en compartamiento son muy subseptibles a la ilumincación y cualquier atuendo que utilice el conductor que bloquee su rostro. En cambio los métodos basados en sensores en los vehiculos, parecen ser los menos intrusivos y con mayor posibilidad de exito.
-		\item Tambien se ha confirmado la ausencia de una base de datos en la literatura en condiciones reales. Por ejemplo para el caso de los métodos basados en comportamiento, las bases de datos son secuencias de video grabadas en oficinas y en muchos casos, las acciones de somnolencia son actuadas; esto complica mucho la investigación en esta area, porque una escena real de un conductor presenta vibraciones del video y problemas de iluminación las cuales no estan presentes en las bases de datos utilizadas en la actualidad. Lo mismo sucede en los métodos que utilizan sensores en el vehiculo, la mayoria de trabajos han simulado la cabina del conductor y todas las  bases de datos son privadas.
-		\item A pesar de que la detección de somnolencia sea un tema de investigación muy estudiado, es lamentable que en la literatura no se cuente con una base de datos en condiciones reales, donde los investigadores puedan evaluar sus algoritmos. Es verdad, que existen proyectos y empresas que cuentan con sistemas con un alto desempeño, pero las bases de datos son privadas y es imposible replicar sus resultados.		
-	\end{itemize}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.2\textwidth]{img/perclos_eye}		
+		\caption{\textit{Landmarks} de los ojos utilizado para calcular el EAR.}
+		\label{fig:ear}
+	\end{figure}
+
+	\begin{equation}\label{eq:ear}
+		EAR = \frac{| p_2  - p_6| + | p_3 - p_5 |}{ | p_1 - p_4 | } 
+	\end{equation}
 
 
+	En el caso de la detección de bostesos, el \textit{Mouth Aspect Ratio} (MAR) es calculado con la Ecuación \ref{eq:mar} (los landmarks están en la Figura \ref{fig:mar}), en nuestro caso, definimos que si este MAR era mayor a 0.7, se consideraba como un bostezo.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.2\textwidth]{img/mar}		
+		\caption{\textit{Landmarks} de los ojos utilizado para calcular el EAR.}
+		\label{fig:mar}	
+	\end{figure}	
+	\begin{equation}\label{eq:mar}
+	MAR = \frac{| p_2 - p_8| + | p_3 - p_7 | + | p_4 - p_6 |}{ | p_1 - p_5 | } 
+	\end{equation}
+
+	\section{Resultados}
+	
+	En la Figura \ref{img:siso_siso}, mostramos como es el funcionamiento de SISO-VID evaluado en la base de datos creada para este proyecto. Esta base de datos tiene muestras de conductores reales en su rutina normal de trabajo de una empresa de transporte.\\
+	
+	\begin{figure}[H]
+		\centering
+		\begin{multicols}{2}
+			\includegraphics[width=0.5\textwidth,keepaspectratio]{img/sisi_vid1}\par 
+			\includegraphics[width=0.5\textwidth,keepaspectratio]{img/sisi_vid2}\par 
+			\includegraphics[width=0.5\textwidth,keepaspectratio]{img/sisi_vid7}\par 
+			\includegraphics[width=0.5\textwidth,keepaspectratio]{img/sisi_vid8}\par 
+		\end{multicols}
+		\caption{SISO-VID en ejecución en la base de datos creada para el proyecto.}
+		\label{img:siso_siso}
+\end{figure}
+
+
+	En la Figura \ref{img:siso_nthu}, mostramos como es el funcionamiento de SISO-VID, pero esta vez evaluado en la base de datos NTHU. La base de datos NTHU, tiene muestras de videos de personas con somnolencia en una oficina con buenas condicionies de iluminación y calidad de imagen.\\
+
+	\begin{figure}[H]
+		\centering
+		\begin{multicols}{2}
+			\includegraphics[width=0.5\textwidth,keepaspectratio]{img/sisi_vid9}\par 
+			\includegraphics[width=0.5\textwidth,keepaspectratio]{img/sisi_vid10}\par 
+			\includegraphics[width=0.5\textwidth,keepaspectratio]{img/sisi_vid11}\par 
+			\includegraphics[width=0.5\textwidth,keepaspectratio]{img/sisi_vid12}\par 
+		\end{multicols}
+		\caption{SISO-VID en ejecución en la base de datos NTHU.}
+		\label{img:siso_nthu}
+	\end{figure}
+	
+	Finalmente en la Figura \ref{fig:ear_mar}, mostramos el conteo de parpadeos y bostesos. Si bien esta información no es determinante para la detección de somnolencia, porque la frecuencia de parpadeos no siempre determina si alguien esta somnoliento, se utilizará esta información para trabajos futuros.
+	
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.35\textwidth]{img/sisi_vid13}		
+		\caption{Conteo de parpadeos y bostesos con SISO-VID.}
+		\label{fig:ear_mar}	
+	\end{figure}
+	
+	\section{Conclusiones}
+	En este informe se ha detallado los algoritmos y métodos utilizados para la implementación de SISO-VID, el cúal es el modulo encargado de la detección de somnolencia a partir de secuencias de video utilizando aprendizaje profundo.\\
+	
+	El método propuesto se basa en hacer un muestreo preliminar de algunos fotogramas, para reducir el tiempo de procesamiento, luego se aplica detección de rostros, para finalemnte hacer la detección de somnolencia con la red neuronal convolucional Inception.\\
+	
+	El método propuesto logró una exactitud de 87\% evaluado en la unión de la base de datos NTHU y una creada especialmente para este proyecto. Adicionalmente, se evaluarón otros modelos, pero obtuvieron un menor desempeño (el informe de pruebas detalla estos experimentos).\\ 
 
 	%\clearpage
 	

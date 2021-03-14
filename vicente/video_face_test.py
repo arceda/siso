@@ -439,7 +439,7 @@ while(cap.isOpened()):
             cv2.imshow('frame',frame_debug)
         frame_count += 1
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(30) & 0xFF == ord('q'):
             break
     else:
         break
