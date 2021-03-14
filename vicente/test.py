@@ -43,23 +43,28 @@ files_despierto = glob.glob(args.path_dataset + "/despierto/*")
 
 y_true = np.hstack(( np.ones(len(files_dormido)), np.zeros(len(files_despierto)) )) 
 
-y_pre = []
+y_pred = []
 for file in files_dormido:
     img = cv2.imread(file)
     img = cv2.resize(img, (224,224))    
-    y_pre.append(predict(model, img))
+    y_pred.append(predict(model, img))
 
 for file in files_despierto:
     img = cv2.imread(file)
     img = cv2.resize(img, (224,224))    
-    y_pre.append(predict(model, img))
+    y_pred.append(predict(model, img))
 
-print(y_true)
-print(y_pre)
+y_pred = np.array(y_pred).round()
 
-acc = accuracy_score(y_true, y_pred, normalize=False)
-matrix = confusion_matrix(y_true, y_pred, labels=["somnoliento", "no somnoliento"])
+#print(y_true)
+#print(y_pred)
+
+acc = accuracy_score(y_true, y_pred)
+matrix = confusion_matrix(y_true, y_pred, labels=[1,0])
 
 print(acc)
 print(matrix)
 # python3 test.py -m ../models/modelSiso_y_NTHU_Inception3.h5 -d /home/vicente/datasets/SISO/TEST/
+# python3 test.py -m /mnt/disk3/ENTRENAMIENTOS/siso_nthu/100_epochs_SISO_NTHU.h5 -d /mnt/disk3/ENTRENAMIENTOS/siso_nthu/TEST/
+
+
