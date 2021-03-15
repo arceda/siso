@@ -90,7 +90,7 @@
 	
 	\subsection{VGG}
 	
-	Propuesta por \cite{simonyan2014very} en el 2014, es una de las primeras redes profundas más conocida. VGG tiene varias versiones diferenciadas por el número de capas, entre esta tenemos VGG-16 y VGG-19. En la Figura \ref{fig:vgg16} y \ref{fig:vgg19}, detallamos la arquitectura de VGG-16 y VGG-19 respectivamente. Nosotros evaluamos el desempeño de VGG-19 para la detección de somnolencia.
+	Propuesta por \cite{simonyan2014very} en el 2014, es una de las primeras redes profundas más conocida. VGG tiene varias versiones diferenciadas por el número de capas, entre esta tenemos VGG-16 y VGG-19. En la Figura \ref{fig:vgg16} y \ref{fig:vgg19}, detallamos la arquitectura de VGG-16 y VGG-19 respectivamente. Nosotros evaluamos el desempeño de VGG-16 para la detección de somnolencia.
 	
 	\begin{figure}[H]
 		\centering
@@ -105,11 +105,11 @@
 		\label{fig:vgg19}
 	\end{figure}
 
-	Los parametros e hyper parametros utilizados para esta red neuronal VGG-19 se presentan en la Tabla \ref{tab:vgg}.
+	Los parametros e hyper parametros utilizados para esta red neuronal VGG-16 se presentan en la Tabla \ref{tab:vgg}.
 	
 	\begin{table}[h]
 		\centering		
-		\caption{Parametros utilizados con VGG-19}
+		\caption{Parametros utilizados con VGG-16}
 		\label{tab:vgg}
 		\begin{tabular}{ p{3cm} p{3cm}}
 			\hline 
@@ -127,7 +127,7 @@
 	
 	\subsection{ResNet}
 
-	Propuesta por \cite{he2016deep}, representa un gran avance en computación gráfica en los ultimos años. ResNet, hizo posible entrenar cientos de capas de neuronas y lograr buenos resultados. La idea principal de ResNet es la introducción del concepto \textit{identity shortcut connection}, que salta una o mas capas (ver Figura \ref{fig:resnet1}). Con este concepto, los autores solucionaron el problema de \textit{vanish gradient} que se tenia en arquitecturas grandes de redes. En la Figura \ref{fig:resnet2}, mostramos una compración de ResNet con VGG-19 y otra red con 34 capas (SISO-VID utilizo dicha arquitectura de ResNet).
+	Propuesta por \cite{he2016deep}, representa un gran avance en computación gráfica en los ultimos años. ResNet, hizo posible entrenar cientos de capas de neuronas y lograr buenos resultados. La idea principal de ResNet es la introducción del concepto \textit{identity shortcut connection}, que salta una o mas capas (ver Figura \ref{fig:resnet1}). Con este concepto, los autores solucionaron el problema de \textit{vanish gradient} que se tenia en arquitecturas grandes de redes. En la Figura \ref{fig:resnet2}, mostramos una compración de ResNet con VGG-16 y otra red con 34 capas (SISO-VID utilizo dicha arquitectura de ResNet).
 
 	\begin{figure}[H]
 		\centering
@@ -139,7 +139,7 @@
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.6\textwidth]{img/resnet2}		
-	\caption{Arquitectura de ResNet utilizada y una comparación con VGG-19 y una red con 34 capas.}
+	\caption{Arquitectura de ResNet utilizada y una comparación con VGG-16 y una red con 34 capas.}
 	\label{fig:resnet2}
 \end{figure} 
 
@@ -250,7 +250,9 @@
 	\end{table}
 	
 
-	Una comparativa del acierto obtenido por cada red neuronal es detallado en la Tabla \ref{tab:comp1}, en este caso, la red neuronal Inception-v3, obtuvo los mejores resultados. Luego, en las Tablas \ref{tab:comp2}, \ref{tab:comp3} y \ref{tab:comp4}, mostramos la matriz de confución de la red neuronal VGG-19, ResNet e Inception-v3 respectivamente.
+	Una comparativa del acierto obtenido por cada red neuronal es detallado en la Tabla \ref{tab:comp1}, en este caso, la red neuronal Inception-v3, obtuvo los mejores resultados. Luego, en las Tablas \ref{tab:comp2}, \ref{tab:comp3} y \ref{tab:comp4}, mostramos la matriz de confusión de la red neuronal VGG-16, ResNet e Inception-v3 respectivamente. De estos resultados, verificamos que Inception-v3 supera a VGG-16 y ResNet. Tambien, vemos que el acierto para la base de datos NTHU es bajo con respecto a las otras bases de datos.
+	
+	
 
 	\begin{table}[H]
 		\centering		
@@ -258,26 +260,26 @@
 		\label{tab:comp1}
 		\begin{tabular}{ p{3cm} p{3cm} p{3cm} p{3cm}}
 			\hline 
-			\textbf{Base de datos} & \textbf{VGG-19} & \textbf{ResNet} & \textbf{Inception-v3}   \\
+			\textbf{Base de datos} & \textbf{VGG-16} & \textbf{ResNet} & \textbf{Inception-v3}   \\
 			\hline 
-			NTHU & x & x & 0.88 \\
-			SISO-IMG & x & x & 0.96 \\			
-			SISO-NTHU & x & x & 0.87 \\
+			NTHU & 0.78 & 0.62 & \textbf{0.88} \\
+			SISO-IMG & 0.90 & 0.59 & \textbf{0.96} \\			
+			SISO-NTHU & 0.81 & 0.65 & \textbf{0.87} \\
 			\hline 
 		\end{tabular}
 	\end{table}
 
 	\begin{table}[H]
 		\centering		
-		\caption{Matriz de confusión de la red neuronal VGG-19 en las bases de datos NTHU, SISO-IMG y SISO-NTHU.}
+		\caption{Matriz de confusión de la red neuronal VGG-16 en las bases de datos NTHU, SISO-IMG y SISO-NTHU.}
 		\label{tab:comp2}
 		\begin{tabular}{ p{1.9cm} p{2cm} p{1.6cm} p{1.9cm} p{1.6cm} p{1.9cm} p{1.6cm}}
 			\hline 
 			& \multicolumn{2}{c}{\textbf{NTHU}} & \multicolumn{2}{c}{\textbf{SISO-IMG}} &  \multicolumn{2}{c}{\textbf{SISO-NTHU}} \\
 			& Somnolencia & Despierto & Somnolencia & Despierto & Somnolencia & Despierto  \\
 			\hline 
-			Somonolencia & 1498 & 301 		& 179 & 8 		& 1608 & 378 \\
-			Despierto & 119 & 1680 	& 8 & 179  	    & 124 & 1862	\\	
+			Somonolencia & 1211 & 588 		& 179 & 8 		& 1518 & 468 \\
+			Despierto & 195 & 1604 	& 26 & 161  	    & 290 & 1696	\\	
 			\hline 
 		\end{tabular}
 	\end{table}
@@ -291,8 +293,8 @@
 		& \multicolumn{2}{c}{\textbf{NTHU}} & \multicolumn{2}{c}{\textbf{SISO-IMG}} &  \multicolumn{2}{c}{\textbf{SISO-NTHU}} \\
 		& Somnolencia & Despierto & Somnolencia & Despierto & Somnolencia & Despierto  \\
 		\hline 
-		Somonolencia & 1498 & 301 		& 179 & 8 		& 1608 & 378 \\
-		Despierto & 119 & 1680 	& 8 & 179  	    & 124 & 1862	\\	
+		Somonolencia & 1473 & 326 		& 112 & 75 		& 1640 & 346 \\
+		Despierto & 1050 & 749		 	& 78 & 109 	    & 1026 & 960	\\	
 		\hline 
 	\end{tabular}
 \end{table}
