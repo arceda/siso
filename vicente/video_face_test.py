@@ -351,6 +351,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 #python3 video_face_test.py -m1 ../models/modelSiso_y_NTHU_Inception3.h5 -v /home/vicente/datasets/NTHU/testing/016_noglasses_mix.mp4
 #python3 video_face_test.py -m1 ../models/modelSiso_y_NTHU_Inception3.h5 -v /home/vicente/datasets/SISO/normal.mp4
 
+# python3 video_face_test.py -m1 ../models/500_epochs_Inceptionv3_SISO_NTHU.h5 -v /home/vicente/datasets/SISO/normal2.mp4
 
 
 STEP_FRAME_RATE = 15 # cada 10 frames hacemos el procesamiento
