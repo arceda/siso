@@ -114,7 +114,12 @@ if int(args.window) == 1:
     cv2.resizeWindow('frame', 1200,800)
 
 
-
+# save video ####################################
+frame_width = int(cap.get(3))
+frame_height = int(cap.get(4))   
+size = (frame_width,frame_height)
+out = cv2.VideoWriter('filename.avi', cv2.VideoWriter_fourcc(*'MP4V'), 30, size)
+# ############################################
 
 while(cap.isOpened()):
     ret, frame = cap.read()
@@ -176,7 +181,7 @@ while(cap.isOpened()):
         if int(args.window) == 1:
             cv2.imshow('frame',frame)
         frame_count += 1
-        #out.write(frame)
+        out.write(frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
